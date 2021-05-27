@@ -8,12 +8,12 @@ from Framework import ABCEndpoint, InModel, OutModel, RuleTraceabilityHandler, R
 class ABCRule(ABCEndpoint, ABC, Generic[InModel, OutModel]):
 
     def _decorate_self(self):
-        rth = RuleTraceabilityHandler(name=self.name, fn=self.vault[-1][-1])
+        rth = RuleTraceabilityHandler(original_class=self, name=self.name)
         self.vault.append(("traceable", rth.return_type, rth))
-        rsh = RuleSignedHandler(fn=rth, traceable_model=rth.return_type)
+        rsh = RuleSignedHandler(original_class=self, traceable_model=rth.return_type)
         self.vault.append(("signed", rsh.return_type, rsh))
-        rwh = RuleWarningHandler(self.vault[-1][-1])
+        rwh = RuleWarningHandler(original_class=self)
         self.vault.append(("warning_handling", self.vault[-1][1], rwh))
-        reh = RuleErrorHandler(self.vault[-1][-1])
+        reh = RuleErrorHandler(original_class=self)
         self.vault.append(("error_handling", self.vault[-1][1], reh))
         self.calculate = self.vault[-1][-1]

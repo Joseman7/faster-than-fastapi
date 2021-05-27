@@ -36,10 +36,10 @@ class ABCStack(ABCEndpoint, ABC, Generic[InModel, OutModel]):
         Override the _decorate_self method with Stack specific decorators
         :return:
         """
-        rts = StackTraceabilityHandler(fn=self.vault[-1][-1], tracer=self.tracer)
+        rts = StackTraceabilityHandler(original_class=self, tracer=self.tracer)
         self.vault.append(("traceable_stack", rts.return_type, rts))
-        rsh = RuleSignedHandler(fn=rts, traceable_model=rts.return_type)
+        rsh = RuleSignedHandler(original_class=self, traceable_model=rts.return_type)
         self.vault.append(("signed", rsh.return_type, rsh))
-        self.vault.append(("error_handling", self.vault[-1][1], RuleErrorHandler(self.vault[-1][-1])))
-        self.vault.append(("warning_handling", self.vault[-1][1], RuleWarningHandler(self.vault[-1][-1])))
+        self.vault.append(("error_handling", self.vault[-1][1], RuleErrorHandler(original_class=self)))
+        self.vault.append(("warning_handling", self.vault[-1][1], RuleWarningHandler(original_class=self)))
         self.calculate = self.vault[-1][-1]  # override the calculate method

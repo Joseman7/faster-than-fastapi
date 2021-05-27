@@ -15,7 +15,7 @@ class InputModel(BaseModel):
     """
     Just two numbers as **input**
     """
-    x: float = Field(..., example=20)
+    x: float = Field(..., example=20, mapping="ABC")
     y: float = Field(..., example=-3)
 
 
@@ -28,10 +28,11 @@ class OutputModel(BaseModel):
     z: float
 
 
-class Add(ABCRule[InputModel, OutputModel]):
+class Add(ABCRule[InputModel, OutputModel], tag="SimpleCalculations"):
     """
     The visible documentation (Swagger) of this rule is the docstring of the calculate function
     """
+    owner = "Another"
 
     def calculate(self, input_model: InputModel) -> OutputModel:
         """
@@ -45,7 +46,9 @@ class Add(ABCRule[InputModel, OutputModel]):
         return OutputModel(z=z)
 
 
-class Subtract(ABCRule[InputModel, OutputModel]):
+class Subtract(ABCRule[InputModel, OutputModel], tag="SimpleCalculations"):
+    owner = "A third"
+
     def calculate(self, input_model: InputModel) -> OutputModel:
         """
         To calculate a **difference**.
